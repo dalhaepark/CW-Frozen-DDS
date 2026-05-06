@@ -7,7 +7,7 @@ def capture_and_send():
     # 환경변수에서 값 가져오기
     slack_token = os.environ.get("SLACK_BOT_TOKEN")
     channel_id = os.environ.get("SLACK_CHANNEL_ID")
-    target_url = "https://script.google.com/a/macros/kurlycorp.com/s/AKfycbw29dV3R3RHqGCR9SqCMRsMukLjTGnZG1GrVrYKGtZL2uB7amuRPnImkFqm_pdP6HXYKg/exec" # 캡처할 웹앱 URL 입력
+    target_url = "https://script.google.com/a/macros/kurlycorp.com/s/AKfycbxOQI41Teb26q4mCQUprTiGCJcymdJl5EM3nBLyRmIRJ0PPVILMoENqYvGoETyceilarA/exec" # 캡처할 웹앱 URL 입력
     screenshot_path = "screenshot.png"
 
     # 1. 웹 화면 캡처 (Playwright 사용)
