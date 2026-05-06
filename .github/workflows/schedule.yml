@@ -8,7 +8,6 @@ on:
 jobs:
   capture-and-send:
     runs-on: ubuntu-latest
-
     steps:
       - name: 저장소 코드 불러오기
         uses: actions/checkout@v3
