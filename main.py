@@ -1,66 +1,82 @@
 import os
+import subprocess
 from playwright.sync_api import sync_playwright
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
 def capture_and_send():
-    # 1. 환경변수에서 보안 값 가져오기
+    # [추가] 깃허브 서버에 한글 폰트 강제 설치
+    print("한글 폰트 설치 중...")
+    try:
+        subprocess.run(["sudo", "apt-get", "update"], check=True)
+        subprocess.run(["sudo", "apt-get", "install", "-y", "fonts-nanum"], check=True)
+        print("한글 폰트 설치 완료!")
+    except Exception as e:
+        print(f"폰트 설치 중 알림: {e}")
+
     slack_token = os.environ.get("SLACK_BOT_TOKEN")
     channel_id = os.environ.get("SLACK_CHANNEL_ID")
-    
-    # 캡처할 구글 앱스 스크립트 웹앱 주소
     target_url = "https://script.google.com/a/macros/kurlycorp.com/s/AKfycbxOQI41Teb26q4mCQUprTiGCJcymdJl5EM3nBLyRmIRJ0PPVILMoENqYvGoETyceilarA/exec"
     screenshot_path = "screenshot.png"
 
-    print("웹페이지 접속 및 캡처를 시작합니다...")
-    
     with sync_playwright() as p:
-        # 브라우저 실행
         browser = p.chromium.launch(headless=True)
-        
-        # [수정] 화면 배율을 1920x1080(FHD)으로 고정 설정
+        # 1920x1080 설정 유지
         page = browser.new_page(viewport={'width': 1920, 'height': 1080})
         
-        # [수정] 페이지 로딩 대기 시간 및 기준 변경 (60초 타임아웃)
         try:
+            print("웹페이지 접속 중...")
             page.goto(target_url, wait_until="load", timeout=60000)
-            
-            # [수정] 데이터 로딩을 위해 추가로 5초간 더 대기
-            print("데이터 로딩을 위해 5초간 대기 중...")
-            page.wait_for_timeout(5000)
-            
-            # [추가] 상단 구글 배너(iframe) 제거 스크립트 실행
-            print("상단 배너 제거 중...")
+            page.wait_for_timeout(7000) # 로딩 시간을 조금 더 늘렸습니다(7초)
+
+            # [강화] 배너 제거 및 화면 정리 스크립트
+            print("상단 배너 및 장애 요소 제거 중...")
             page.evaluate("""
-                const banners = document.querySelectorAll('iframe');
-                banners.forEach(b => {
-                    if (b.src.includes('user_content')) {
-                        b.style.display = 'none';
-                    }
-                });
-                document.body.style.top = '0';
+                () => {
+                    // 1. 모든 iframe(배너 포함)을 찾아 숨김
+                    const iframes = document.querySelectorAll('iframe');
+                    iframes.forEach(f => {
+                        if (f.src.includes('googlegroups.com') || f.src.includes('static') || f.offsetHeight < 100) {
+                            f.style.display = 'none';
+                        }
+                    });
+                    
+                    // 2. 구글 앱스 스크립트 특유의 배너 컨테이너 제거
+                    const bannerSelectors = [
+                        '.docs-ml-header-item', 
+                        '.script-application-sidebar',
+                        'table.goog-ws-fixed-header'
+                    ];
+                    bannerSelectors.forEach(s => {
+                        const el = document.querySelector(s);
+                        if (el) el.style.display = 'none';
+                    });
+
+                    // 3. 페이지 상단 여백 강제 제거
+                    document.body.style.paddingTop = '0';
+                    document.body.style.marginTop = '0';
+                }
             """)
             
-            # 스크린샷 저장 (1920 너비 기준 전체 페이지)
-            page.screenshot(path=screenshot_path, full_page=True)
+            # 스크린샷 저장
+            page.screenshot(path=screenshot_path, full_page=False) # 한 화면만 깔끔하게 찍기 위해 False 권장
             print("캡처 완료!")
             
         except Exception as e:
-            print(f"캡처 중 에러 발생: {e}")
+            print(f"에러 발생: {e}")
         
         browser.close()
 
-    # 2. 슬랙으로 이미지 전송
-    print("슬랙으로 이미지를 전송합니다...")
+    # 슬랙 전송
     client = WebClient(token=slack_token)
     try:
-        response = client.files_upload_v2(
+        client.files_upload_v2(
             channel=channel_id,
             file=screenshot_path,
-            title="웹앱 모니터링 캡처 (1920x1080)",
-            initial_comment="현재 웹앱의 화면입니다. 📸 (배너 제거 및 해상도 최적화 완료)"
+            title="최종 최적화 대시보드",
+            initial_comment="✅ 한글 폰트 적용 및 배너 제거가 완료된 화면입니다."
         )
-        print("전송 성공!")
+        print("슬랙 전송 성공!")
     except SlackApiError as e:
         print(f"전송 실패: {e.response['error']}")
 
