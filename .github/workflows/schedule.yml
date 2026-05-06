@@ -1,0 +1,6 @@
+git init
+git add .
+git commit -m "첫 번째 코드 업로드"
+git branch -M main
+git remote add origin https://github.com/dalhaepark/CW-Frozen-DDS.git
+git push -u origin main
