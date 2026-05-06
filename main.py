@@ -18,7 +18,7 @@ def capture_and_send():
         page = browser.new_page()
         
         # 웹페이지 로딩 대기 (필요시 wait_until 옵션 조정 가능)
-        page.goto(target_url, wait_until="networkidle") 
+        page.goto(target_url, wait_until="load", timeout=60000)
         
         # 스크린샷 저장
         page.screenshot(path=screenshot_path, full_page=True)
