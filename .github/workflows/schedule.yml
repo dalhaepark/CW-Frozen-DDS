@@ -5,6 +5,10 @@ on:
      - cron: '10 7-16 * * *'
   workflow_dispatch:
 
+# 최상위에 이 환경 변수를 추가하면 경고가 해결됩니다.
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   capture-and-send:
     runs-on: ubuntu-latest
