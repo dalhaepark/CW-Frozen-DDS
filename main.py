@@ -26,7 +26,7 @@ def capture_and_send():
 
     slack_token = os.environ.get("SLACK_BOT_TOKEN")
     channel_id = os.environ.get("SLACK_CHANNEL_ID")
-    target_url = "https://script.google.com/a/macros/kurlycorp.com/s/AKfycbxOQI41Teb26q4mCQUprTiGCJcymdJl5EM3nBLyRmIRJ0PPVILMoENqYvGoETyceilarA/exec"
+    target_url = "https://script.google.com/a/macros/kurlycorp.com/s/AKfycbwLNKdvU8o1QQ5dbvEdqFpSUcxedRwcLiV5PO9QT7MM_TglvugMWaw-qRlHd-nunzRqVA/exec"
     screenshot_path = "screenshot.png"
 
     with sync_playwright() as p:
