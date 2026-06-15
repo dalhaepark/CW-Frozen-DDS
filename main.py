@@ -10,12 +10,10 @@ def capture_and_send():
     # 1. 현재 시간 계산 (한국 시간 기준)
     korea_tz = pytz.timezone('Asia/Seoul')
     now = datetime.now(korea_tz)
-    current_hour = now.strftime("%H") # 24시간 형식의 시간 (예: 20)
+    current_hour = now.strftime("%H") 
     
-    # 전송할 메시지 문구 설정
     slack_message = f"{current_hour}시 기준 창원 냉동OB팀, 생산현황입니다."
 
-    # [추가] 깃허브 서버에 한글 폰트 강제 설치
     print("한글 폰트 설치 중...")
     try:
         subprocess.run(["sudo", "apt-get", "update"], check=True)
@@ -26,7 +24,10 @@ def capture_and_send():
 
     slack_token = os.environ.get("SLACK_BOT_TOKEN")
     channel_id = os.environ.get("SLACK_CHANNEL_ID")
+    
+    # ⭐ [여기 수정] 기존 구글 앱스 스크립트 URL 대신 새로 변경된 URL을 따옴표 안에 넣으세요!
     target_url = "https://script.google.com/a/macros/kurlycorp.com/s/AKfycbwLNKdvU8o1QQ5dbvEdqFpSUcxedRwcLiV5PO9QT7MM_TglvugMWaw-qRlHd-nunzRqVA/exec"
+    
     screenshot_path = "screenshot.png"
 
     with sync_playwright() as p:
@@ -72,7 +73,7 @@ def capture_and_send():
             channel=channel_id,
             file=screenshot_path,
             title=f"생산현황_{now.strftime('%Y%m%d_%H%M')}",
-            initial_comment=slack_message  # <-- 요청하신 시간 메시지가 여기 들어갑니다!
+            initial_comment=slack_message  
         )
         print(f"전송 성공: {slack_message}")
     except SlackApiError as e:
