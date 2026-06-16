@@ -7,12 +7,19 @@ from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
 def capture_and_send():
+    # ⭐ 구글 앱스 스크립트 웹앱 URL (메시지 링크 연동을 위해 상단으로 이동)
+    target_url = "https://script.google.com/macros/s/AKfycbyR4XzaWo4smZhF2diX2lXRZMa7j0nudrkBpOrPViO3nXj7wyWrUTR6Gn9axGgZb6Wzpg/exec"
+
     # 1. 현재 시간 계산 (한국 시간 기준)
     korea_tz = pytz.timezone('Asia/Seoul')
     now = datetime.now(korea_tz)
     current_hour = now.strftime("%H") 
     
-    slack_message = f"{current_hour}시 기준 창원 냉동OB팀, 생산현황입니다."
+    # 💡 슬랙 링크 서식인 <URL|텍스트> 구문을 적용하여 하이퍼링크 문구 추가
+    slack_message = (
+        f"{current_hour}시 기준 창원 냉동OB팀, 생산현황입니다.\n"
+        f"시트: <{target_url}|CW_FROZEN DDS>"
+    )
 
     print("한글 폰트 설치 중...")
     try:
@@ -24,9 +31,6 @@ def capture_and_send():
 
     slack_token = os.environ.get("SLACK_BOT_TOKEN")
     channel_id = os.environ.get("SLACK_CHANNEL_ID")
-    
-    # ⭐ [여기 수정] 기존 구글 앱스 스크립트 URL 대신 새로 변경된 URL을 따옴표 안에 넣으세요!
-    target_url = "https://script.google.com/a/macros/kurlycorp.com/s/AKfycbwLNKdvU8o1QQ5dbvEdqFpSUcxedRwcLiV5PO9QT7MM_TglvugMWaw-qRlHd-nunzRqVA/exec"
     
     screenshot_path = "screenshot.png"
 
