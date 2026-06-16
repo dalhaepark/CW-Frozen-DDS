@@ -1,5 +1,4 @@
 import os
-import subprocess
 from datetime import datetime
 import pytz
 from playwright.sync_api import sync_playwright
@@ -7,31 +6,19 @@ from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
 def capture_and_send():
-    # ⭐ 구글 앱스 스크립트 웹앱 URL
     target_url = "https://script.google.com/macros/s/AKfycbyR4XzaWo4smZhF2diX2lXRZMa7j0nudrkBpOrPViO3nXj7wyWrUTR6Gn9axGgZb6Wzpg/exec"
 
-    # 1. 현재 시간 계산 (한국 시간 기준)
     korea_tz = pytz.timezone('Asia/Seoul')
     now = datetime.now(korea_tz)
     current_hour = now.strftime("%H") 
     
-    # 💡 슬랙 하이퍼링크 마크업 구문 <URL|텍스트> 연동 문구 생성
     slack_message = (
         f"{current_hour}시 기준 창원 냉동OB팀, 생산현황입니다.\n"
         f"시트: <{target_url}|CW_FROZEN DDS>"
     )
 
-    print("한글 폰트 설치 중...")
-    try:
-        subprocess.run(["sudo", "apt-get", "update"], check=True)
-        subprocess.run(["sudo", "apt-get", "install", "-y", "fonts-nanum"], check=True)
-        print("한글 폰트 설치 완료!")
-    except Exception as e:
-        print(f"폰트 설치 중 알림: {e}")
-
     slack_token = os.environ.get("SLACK_BOT_TOKEN")
     channel_id = os.environ.get("SLACK_CHANNEL_ID")
-    
     screenshot_path = "screenshot.png"
 
     with sync_playwright() as p:
@@ -70,7 +57,6 @@ def capture_and_send():
         
         browser.close()
 
-    # 2. 슬랙 전송
     client = WebClient(token=slack_token)
     try:
         client.files_upload_v2(
