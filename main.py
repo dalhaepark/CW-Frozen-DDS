@@ -7,7 +7,7 @@ from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
 def capture_and_send():
-    # ⭐ 구글 앱스 스크립트 웹앱 URL (메시지 링크 연동을 위해 상단으로 이동)
+    # ⭐ 구글 앱스 스크립트 웹앱 URL
     target_url = "https://script.google.com/macros/s/AKfycbyR4XzaWo4smZhF2diX2lXRZMa7j0nudrkBpOrPViO3nXj7wyWrUTR6Gn9axGgZb6Wzpg/exec"
 
     # 1. 현재 시간 계산 (한국 시간 기준)
@@ -15,7 +15,7 @@ def capture_and_send():
     now = datetime.now(korea_tz)
     current_hour = now.strftime("%H") 
     
-    # 💡 슬랙 링크 서식인 <URL|텍스트> 구문을 적용하여 하이퍼링크 문구 추가
+    # 💡 슬랙 하이퍼링크 마크업 구문 <URL|텍스트> 연동 문구 생성
     slack_message = (
         f"{current_hour}시 기준 창원 냉동OB팀, 생산현황입니다.\n"
         f"시트: <{target_url}|CW_FROZEN DDS>"
