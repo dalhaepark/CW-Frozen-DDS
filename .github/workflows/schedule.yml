@@ -1,23 +1,27 @@
 name: Slack Screenshot Bot
 
 on:
+  # 1. 정기 스케줄러 트리거 (기존 유지)
   schedule:
      - cron: '10 7-16 * * *'
+     
+  # 2. 깃허브 웹사이트에서 수동 실행 트리거 (기존 유지)
   workflow_dispatch:
 
-# 최상위에 이 환경 변수를 추가하면 경고가 해결됩니다.
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  # 3. 🔥 [신규 추가] 웹앱의 전송 버튼을 누르면 즉시 작동하는 원격 신호 수신기
+  repository_dispatch:
+    types: [manual_slack_capture]
 
 jobs:
   capture-and-send:
     runs-on: ubuntu-latest
     steps:
+      # Node.js 24 환경 경고를 방지하기 위해 최신 버전 패키지(@v5, @v6)로 격상했습니다.
       - name: 저장소 코드 불러오기
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Python 환경 설정
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.10'
 
